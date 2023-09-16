@@ -54,10 +54,14 @@ public class SecurityService {
                 .signWith(SignatureAlgorithm.HS256, Base64.getEncoder().encodeToString(secret.getBytes()))
                 .compact();
 
-        return null;
+        return TokenDetails.builder()
+                .token(token)
+                .issuedAt(createdDate)
+                .expiredAt(expirationDate)
+                .build();
     }
 
-    public Mono<TokenDetails> authenticate (String username, String password) {
+    public Mono<TokenDetails> authenticate(String username, String password) {
         return userRepository.findByUsername(username)
                 .flatMap(user -> {
                     if (!user.isEnabled()) {

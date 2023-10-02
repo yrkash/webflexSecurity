@@ -7,6 +7,7 @@ import lombok.RequiredArgsConstructor;
 import net.proselyte.webflexsecurity.entity.UserEntity;
 import net.proselyte.webflexsecurity.exception.AuthException;
 import net.proselyte.webflexsecurity.repository.UserRepository;
+import net.proselyte.webflexsecurity.service.UserService;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
@@ -18,7 +19,7 @@ import java.util.*;
 @RequiredArgsConstructor
 public class SecurityService {
 
-    private final UserRepository userRepository;
+    private final UserService userService;
     private final PasswordEncoder passwordEncoder;
 
     @Value("${jwt.secret}")
@@ -63,7 +64,7 @@ public class SecurityService {
     }
 
     public Mono<TokenDetails> authenticate(String username, String password) {
-        return userRepository.findByUsername(username)
+        return userService.getUserByUsername(username)
                 .flatMap(user -> {
                     if (!user.isEnabled()) {
                         return Mono.error(new AuthException("Account disabled","PROSELYTE_USER_ACCOUNT_DISABLED"));
